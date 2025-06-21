@@ -17,7 +17,7 @@ model = MNISTModel()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters())
 
-epochs = 2
+epochs = 10
 for epoch in range(epochs):
     for images, labels in dataloader:
         optimizer.zero_grad()

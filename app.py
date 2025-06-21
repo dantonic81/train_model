@@ -8,6 +8,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from model import MNISTModel
 from PIL import Image
+import matplotlib.pyplot as plt
+
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -35,9 +37,19 @@ def index():
 
 @app.post("/predict")
 def predict(data: ImageInput):
-    pixels = np.array(data.pixels).astype(np.float32).reshape(1, 1, 28, 28) / 255.0
+    # Skip double-normalizing!
+    pixels = np.array(data.pixels).astype(np.float32).reshape(1, 1, 28, 28)
+
+    # Visual debug BEFORE converting to tensor
+    import matplotlib.pyplot as plt
+    plt.imshow(pixels.reshape(28, 28), cmap="gray")
+    plt.axis("off")
+    plt.savefig("debug_input.png")
+
+    # Run model
     tensor = torch.tensor(pixels)
     with torch.no_grad():
         output = model(tensor)
         pred = output.argmax(dim=1).item()
+
     return {"prediction": pred}
