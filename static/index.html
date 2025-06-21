@@ -65,16 +65,27 @@ function clearCanvas() {
 }
 
 function predict() {
+    // Check if canvas is blank
+    let blank = document.createElement("canvas");
+    blank.width = canvas.width;
+    blank.height = canvas.height;
+    let blankCtx = blank.getContext("2d");
+    blankCtx.fillStyle = "white";
+    blankCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (canvas.toDataURL() === blank.toDataURL()) {
+        document.getElementById("result").innerText = "Please draw a digit before predicting.";
+        return;
+    }
+
     // Create a hidden 28x28 canvas and draw the 280x280 canvas into it
     let smallCanvas = document.createElement("canvas");
     smallCanvas.width = 28;
     smallCanvas.height = 28;
     let smallCtx = smallCanvas.getContext("2d");
 
-    // Draw scaled down image
     smallCtx.drawImage(canvas, 0, 0, 28, 28);
 
-    // Get pixel data from small canvas
     let imgData = smallCtx.getImageData(0, 0, 28, 28);
     let data = imgData.data;
     let pixels = [];
